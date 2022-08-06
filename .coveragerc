@@ -1,0 +1,13 @@
+[run]
+omit = *site-packages*
+
+[report]
+fail_under = 80
+exclude_lines =
+    pragma: no cover
+    raise NotImplementedError
+    __str__
+    pass
+
+[paths]
+source = octoxlabs

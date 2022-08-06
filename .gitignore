@@ -1,0 +1,12 @@
+# jetbrains
+.idea/
+
+# manual tests
+example.py
+
+
+# pytest
+.pytest_cache/
+htmlcov/
+coverage.xml
+.coverage
