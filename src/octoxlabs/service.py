@@ -17,7 +17,7 @@ class OctoxLabsService:
     base_url: str
 
     token: str
-    token_prefix: str = "Octo"
+    token_prefix: str = "Octoxlabs"
 
     headers: Dict[str, str]
 
