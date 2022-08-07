@@ -12,7 +12,7 @@ def test_octoxlabs_get_adapters(mock_response):
     octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
     mock_response.add(
         method=responses.GET,
-        url="https://octoxlabs.service:8043/adapters/adapters?search=octox&size=1",
+        url="https://octoxlabs.service:8043/adapters/adapters?search=octox&size=1&page=1",
         body=json.dumps(
             {
                 "count": 1,
@@ -41,7 +41,7 @@ def test_octoxlabs_get_connections(adapter_factory, mock_response):
     octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
     mock_response.add(
         method=responses.GET,
-        url="https://octoxlabs.service:8043/adapters/connections?adapter=1",
+        url="https://octoxlabs.service:8043/adapters/connections?adapter=1&page=1&search=&size=20",
         body=json.dumps(
             {
                 "count": 1,
