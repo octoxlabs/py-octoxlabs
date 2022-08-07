@@ -6,6 +6,7 @@ import responses
 from octoxlabs.service import OctoxLabsService
 
 # Tests
+from tests.factories.discovery_factory import DiscoveryFactory
 from tests.factories.adapter_factory import AdapterFactory, ConnectionFactory
 
 
@@ -28,3 +29,8 @@ def adapter_factory():
 @pytest.fixture()
 def connection_factory():
     return ConnectionFactory
+
+
+@pytest.fixture()
+def discovery_factory():
+    return DiscoveryFactory

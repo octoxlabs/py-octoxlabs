@@ -5,20 +5,6 @@ import json
 import responses
 
 
-def test_adapter_hr_status(adapter_factory):
-    adapter = adapter_factory.create()
-    assert adapter.hr_status == "Done"
-
-    adapter.status = 2
-    assert adapter.hr_status == "Warning"
-
-    adapter.status = 3
-    assert adapter.hr_status == "Error"
-
-    adapter.status = 4
-    assert adapter.hr_status == "None"
-
-
 def test_adapter_get_connections(adapter_factory, octoxlabs_service, mock_response):
     adapter = adapter_factory.create(service=octoxlabs_service)
     mock_response.add(
