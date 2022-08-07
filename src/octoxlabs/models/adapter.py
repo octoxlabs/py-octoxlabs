@@ -1,6 +1,6 @@
 # Standard Library
 from dataclasses import dataclass
-from typing import Dict, List, Union, Optional
+from typing import Dict, List, Tuple, Union, Optional
 
 # Octoxlabs
 from octoxlabs.service import OctoxLabsService
@@ -26,9 +26,9 @@ class Adapter:
 
     service: Optional[OctoxLabsService] = None
 
-    def get_connections(self) -> List["Connection"]:
+    def get_connections(self) -> Tuple[int, List["Connection"]]:
         connections_data = self.service.request_builder(path=connections_path(), params={"adapter": self.id}).json()
-        return [
+        return connections_data.get("count"), [
             Connection(
                 id=connection.get("id"),
                 adapter_id=connection.get("adapter"),

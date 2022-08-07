@@ -22,11 +22,11 @@ class OctoxLabs:
     def __init__(self, ip: str, token: str):
         self.service = OctoxLabsService(ip=ip, token=token)
 
-    def get_adapters(self, search: str = "", size: int = 100) -> List[Adapter]:
+    def get_adapters(self, search: str = "", size: int = 100) -> Tuple[int, List[Adapter]]:
         adapters_data = self.service.request_builder(
             path=adapters_path(), params={"search": search, "size": size}
         ).json()
-        return [
+        return adapters_data.get("count"), [
             Adapter(
                 id=adapter.get("id"),
                 name=adapter.get("name"),
@@ -40,10 +40,10 @@ class OctoxLabs:
             for adapter in adapters_data.get("results", [])
         ]
 
-    def get_connections(self, adapter: Adapter = None, adapter_id: int = None) -> List[Connection]:
+    def get_connections(self, adapter: Adapter = None, adapter_id: int = None) -> Tuple[int, List[Connection]]:
         filters = {"adapter": adapter.id if adapter else adapter_id}
         connections_data = self.service.request_builder(path=connections_path(), params=filters).json()
-        return [
+        return connections_data.get("count"), [
             Connection(
                 id=connection.get("id"),
                 adapter_id=connection.get("adapter"),
@@ -57,10 +57,10 @@ class OctoxLabs:
             for connection in connections_data.get("results")
         ]
 
-    def get_discoveries(self, status: int = None, size: int = None) -> List[Discovery]:
+    def get_discoveries(self, status: int = None, size: int = None) -> Tuple[int, List[Discovery]]:
         filters = {"status": status, "size": size}
         discoveries_data = self.service.request_builder(path=discoveries_path(), params=filters).json()
-        return [
+        return discoveries_data.get("count"), [
             Discovery(
                 id=discovery.get("id"),
                 start_time=discovery.get("start_time"),

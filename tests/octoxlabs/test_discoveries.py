@@ -17,6 +17,7 @@ def test_octoxlabs_get_discoveries(mock_response):
         url="https://octoxlabs.service:8043/discoveries/discoveries",
         body=json.dumps(
             {
+                "count": 1,
                 "results": [
                     {
                         "id": 1,
@@ -25,13 +26,14 @@ def test_octoxlabs_get_discoveries(mock_response):
                         "status": 2,
                         "progress": 100.0,
                     }
-                ]
+                ],
             }
         ),
     )
 
-    discovery = octoxlabs.get_discoveries()[0]
-    assert discovery.status == 2
+    count, discoveries = octoxlabs.get_discoveries()
+    assert count == 1
+    assert discoveries[0].status == 2
 
 
 def test_octoxlabs_get_last_discovery(mock_response):

@@ -12,6 +12,7 @@ def test_adapter_get_connections(adapter_factory, octoxlabs_service, mock_respon
         url="https://octoxlabs.test:8043/adapters/connections?adapter=1",
         body=json.dumps(
             {
+                "count": 1,
                 "results": [
                     {
                         "id": 1,
@@ -22,15 +23,15 @@ def test_adapter_get_connections(adapter_factory, octoxlabs_service, mock_respon
                         "description": "",
                         "enabled": False,
                     }
-                ]
+                ],
             }
         ),
     )
 
-    connection = adapter.get_connections()[0]
-    assert connection.name == "octoxlabs01"
-    assert connection.id == 1
-    assert connection.adapter_id == 1
+    count, connections = adapter.get_connections()
+    assert connections[0].name == "octoxlabs01"
+    assert connections[0].id == 1
+    assert connections[0].adapter_id == 1
 
 
 def test_connection_get_adapter(connection_factory, octoxlabs_service, mock_response):
