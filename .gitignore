@@ -10,3 +10,7 @@ example.py
 htmlcov/
 coverage.xml
 .coverage
+
+# pypi
+dist/
+src/octoxlabs.egg-info/
