@@ -26,3 +26,7 @@ def asset_search_path() -> str:
 
 def asset_detail_path(hostname: str) -> str:
     return f"/assets/assets/{hostname}"
+
+
+def ping_pong_path() -> str:
+    return "/api/ping"

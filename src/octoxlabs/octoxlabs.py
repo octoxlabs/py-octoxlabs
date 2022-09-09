@@ -8,6 +8,7 @@ from .exceptions import NoDiscoveryError
 from .models.adapter import Adapter, Connection
 from .constants.paths import (
     adapters_path,
+    ping_pong_path,
     connections_path,
     discoveries_path,
     asset_detail_path,
@@ -21,6 +22,12 @@ class OctoxLabs:
 
     def __init__(self, ip: str, token: str):
         self.service = OctoxLabsService(ip=ip, token=token)
+
+    def ping(self):
+        response = self.service.request_builder(path=ping_pong_path()).json()
+        if response.get("pong", None) == "ok":
+            return True
+        return False
 
     def get_adapters(self, search: str = "", size: int = 100, page: int = 1) -> Tuple[int, List[Adapter]]:
         adapters_data = self.service.request_builder(
