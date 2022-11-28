@@ -15,11 +15,12 @@ pip install octoxlabs
 6. Copy API Token
 
 ## Quick Start
+
 ```python
 from octoxlabs import OctoxLabs
 
 octo = OctoxLabs(ip="<your-octoxlabs-platform-ip>", token="<your-api-token>")
-count, assets = octo.search_assets(query="Adapters = active-directory")
+count, assets = octo.search_devices(query="Adapters = active-directory")
 ```
 
 ## Contributing

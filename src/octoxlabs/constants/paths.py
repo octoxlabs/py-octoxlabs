@@ -20,11 +20,11 @@ def last_discovery_path() -> str:
     return "/discoveries/last"
 
 
-def asset_search_path() -> str:
+def device_search_path() -> str:
     return "/assets/assets"
 
 
-def asset_detail_path(hostname: str) -> str:
+def device_detail_path(hostname: str) -> str:
     return f"/assets/assets/{hostname}"
 
 

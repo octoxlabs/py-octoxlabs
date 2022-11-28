@@ -11,8 +11,8 @@ from .constants.paths import (
     ping_pong_path,
     connections_path,
     discoveries_path,
-    asset_detail_path,
-    asset_search_path,
+    device_detail_path,
+    device_search_path,
     last_discovery_path,
 )
 
@@ -92,7 +92,7 @@ class OctoxLabs:
             )
         raise NoDiscoveryError("No discovery.")
 
-    def search_assets(
+    def search_devices(
         self,
         query: str = "",
         fields: List[str] = None,
@@ -110,13 +110,13 @@ class OctoxLabs:
             "index_id": discovery.id if discovery else discovery_id or None,
             "ordering": ordering or [],
         }
-        data = self.service.request_builder(method="POST", path=asset_search_path(), json=payload).json()
+        data = self.service.request_builder(method="POST", path=device_search_path(), json=payload).json()
         return data.get("count"), data.get("results")
 
-    def get_asset_detail(
+    def get_device_detail(
         self, hostname: str, discovery: Discovery = None, discovery_id: int = None
     ) -> Dict[str, List[Any]]:
         payload = {"index_id": discovery.id if discovery else discovery_id or self.get_last_discovery().id}
         return self.service.request_builder(
-            method="POST", path=asset_detail_path(hostname=hostname), json=payload
+            method="POST", path=device_detail_path(hostname=hostname), json=payload
         ).json()

@@ -9,7 +9,7 @@ from octoxlabs import OctoxLabs
 from octoxlabs.utils import parse_string_datetime
 
 
-def test_octoxlabs_search_assets(mock_response):
+def test_octoxlabs_search_devices(mock_response):
     octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
     mock_response.add(
         method=responses.POST,
@@ -32,7 +32,7 @@ def test_octoxlabs_search_assets(mock_response):
         ),
     )
 
-    count, assets = octoxlabs.search_assets()
+    count, assets = octoxlabs.search_devices()
     asset = assets[0]
 
     assert count == 300
@@ -42,7 +42,7 @@ def test_octoxlabs_search_assets(mock_response):
     assert parsed_first_fetch_time.year == 2022
 
 
-def test_octoxlabs_get_asset_detail(discovery_factory, mock_response):
+def test_octoxlabs_get_device_detail(discovery_factory, mock_response):
     octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
     mock_response.add(
         method=responses.POST,
@@ -61,5 +61,5 @@ def test_octoxlabs_get_asset_detail(discovery_factory, mock_response):
     )
     discovery = discovery_factory.create()
 
-    asset = octoxlabs.get_asset_detail(hostname="octoxlabs01", discovery=discovery)
+    asset = octoxlabs.get_device_detail(hostname="octoxlabs01", discovery=discovery)
     assert asset["IpAddresses"] == ["127.0.0.1"]
