@@ -2,15 +2,18 @@
 from typing import Any, Dict, List, Tuple
 
 # Local Folder
+from .models.query import Query
 from .service import OctoxLabsService
 from .models.discovery import Discovery
-from .exceptions import NoDiscoveryError
 from .models.adapter import Adapter, Connection
+from .exceptions import NotFound, NoDiscoveryError
 from .constants.paths import (
+    queries_path,
     adapters_path,
     ping_pong_path,
     connections_path,
     discoveries_path,
+    query_detail_path,
     device_detail_path,
     device_search_path,
     last_discovery_path,
@@ -120,3 +123,46 @@ class OctoxLabs:
         return self.service.request_builder(
             method="POST", path=device_detail_path(hostname=hostname), json=payload
         ).json()
+
+    def get_queries(self, page: int = 1, search: str = "", size: int = 20) -> Tuple[int, List[Query]]:
+        payload = {"page": page, "search": search, "size": size}
+        queries_data = self.service.request_builder(path=queries_path(), params=payload).json()
+        return queries_data.get("count"), [
+            Query(
+                id=query.get("id"),
+                name=query.get("name"),
+                text=query.get("text"),
+                tags=query.get("tags"),
+                count=query.get("count"),
+                is_public=query.get("is_public"),
+                created_at=query.get("created_at"),
+                updated_at=query.get("updated_at"),
+                username=query.get("user_full_name"),
+                is_temporary=query.get("temporary"),
+                service=self.service,
+            )
+            for query in queries_data.get("results")
+        ]
+
+    def get_query_by_id(self, query_id: int) -> Query:
+        query = self.service.request_builder(path=query_detail_path(query_id=query_id)).json()
+        return Query(
+            id=query.get("id"),
+            name=query.get("name"),
+            text=query.get("text"),
+            tags=query.get("tags"),
+            count=query.get("count"),
+            is_public=query.get("is_public"),
+            created_at=query.get("created_at"),
+            updated_at=query.get("updated_at"),
+            username=query.get("user_full_name"),
+            is_temporary=query.get("temporary"),
+            service=self.service,
+        )
+
+    def get_query_by_name(self, query_name: str) -> Query:
+        _, queries = self.get_queries(search=query_name, size=1000)
+        for query in queries:
+            if query_name == query.name:
+                return query
+        raise NotFound("Query not found.")

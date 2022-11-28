@@ -28,5 +28,13 @@ def device_detail_path(hostname: str) -> str:
     return f"/assets/assets/{hostname}"
 
 
+def queries_path() -> str:
+    return "/queries/queries"
+
+
+def query_detail_path(query_id: int) -> str:
+    return f"/queries/queries/{query_id}"
+
+
 def ping_pong_path() -> str:
     return "/api/ping"

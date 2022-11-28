@@ -4,3 +4,7 @@ class ApiException(Exception):
 
 class NoDiscoveryError(Exception):
     pass
+
+
+class NotFound(Exception):
+    pass
