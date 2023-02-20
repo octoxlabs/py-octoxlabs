@@ -21,11 +21,11 @@ def last_discovery_path() -> str:
 
 
 def device_search_path() -> str:
-    return "/assets/assets"
+    return "/devices/devices"
 
 
 def device_detail_path(hostname: str) -> str:
-    return f"/assets/assets/{hostname}"
+    return f"/devices/devices/{hostname}"
 
 
 def queries_path() -> str:
