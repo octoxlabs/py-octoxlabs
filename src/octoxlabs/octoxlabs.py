@@ -1,22 +1,34 @@
 # Standard Library
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Union
 
 # Local Folder
 from .models.query import Query
 from .service import OctoxLabsService
 from .models.discovery import Discovery
+from .models.companies import Domain, Company
 from .models.adapter import Adapter, Connection
-from .exceptions import NotFound, NoDiscoveryError
+from .models.users import User, Group, Permission
+from .exceptions import NotFound, NoDiscoveryError, CantCreate, CantUpdate, CantDelete
 from .constants.paths import (
+    domains_path,
     queries_path,
     adapters_path,
+    companies_path,
     ping_pong_path,
     connections_path,
+    connection_detail_path,
     discoveries_path,
     query_detail_path,
     device_detail_path,
     device_search_path,
+    domain_detail_path,
+    company_detail_path,
     last_discovery_path,
+    users_path,
+    user_detail_path,
+    groups_path,
+    group_detail_path,
+    permissions_path,
 )
 
 
@@ -68,6 +80,37 @@ class OctoxLabs:
             )
             for connection in connections_data.get("results")
         ]
+
+    def create_connection(
+        self,
+        adapter_id: int,
+        connection_name: str,
+        connection_description: str,
+        connector_id: int,
+        option_connections: List[Dict[str, Any]],
+    ) -> Union[str, CantCreate]:
+        payload = {
+            "adapter": adapter_id,
+            "name": connection_name,
+            "description": connection_description,
+            "connector": connector_id,
+            "option_connections": option_connections,
+        }
+
+        try:
+            connection = self.service.request_builder(method="POST", path=connections_path(), json=payload).json()
+            return f"{connection.get('name')} connection created successfully"
+
+        except Exception as e:
+            return CantCreate(str(e))
+
+    def delete_connection(self, connection_id: int) -> Union[str, CantDelete]:
+        try:
+            self.service.request_builder(method="DELETE", path=connection_detail_path(connection_id=connection_id))
+            return f"Connection deleted successfully."
+
+        except Exception as e:
+            return CantDelete(str(e))
 
     def get_discoveries(self, status: int = None, size: int = None, page: int = 1) -> Tuple[int, List[Discovery]]:
         filters = {"status": status, "size": size, "page": page}
@@ -144,7 +187,52 @@ class OctoxLabs:
             for query in queries_data.get("results")
         ]
 
-    def get_query_by_id(self, query_id: int) -> Query:
+    def create_query(
+        self, query_name: str, query_text: str, is_public: bool, tags: List[int] = None
+    ) -> Union[str, CantCreate]:
+        payload = {
+            "name": query_name,
+            "text": query_text,
+            "is_public": is_public,
+        }
+        if tags:
+            payload["tags"] = tags
+
+        try:
+            query = self.service.request_builder(method="POST", path=queries_path(), json=payload).json()
+            return f"{query.get('name')} query created successfully"
+
+        except Exception as e:
+            return CantCreate(str(e))
+
+    def update_query(
+        self, query_id: str, query_name: str, query_text: str, is_public: bool = None, tags: List[int] = None
+    ) -> Union[str, CantUpdate]:
+        payload = {"name": query_name, "text": query_text}
+
+        if is_public:
+            payload["is_public"] = is_public
+        if tags:
+            payload["tags"] = tags
+
+        try:
+            query = self.service.request_builder(
+                method="PUT", path=query_detail_path(query_id=query_id), json=payload
+            ).json()
+            return f"{query.get('name')} query successfully updated."
+
+        except Exception as e:
+            return CantUpdate(str(e))
+
+    def delete_query(self, query_id: str) -> Union[str, CantDelete]:
+        try:
+            self.service.request_builder(method="DELETE", path=query_detail_path(query_id=query_id))
+            return f"Query deleted successfully."
+
+        except Exception as e:
+            return CantDelete(str(e))
+
+    def get_query_by_id(self, query_id: str) -> Query:
         query = self.service.request_builder(path=query_detail_path(query_id=query_id)).json()
         return Query(
             id=query.get("id"),
@@ -166,3 +254,286 @@ class OctoxLabs:
             if query_name == query.name:
                 return query
         raise NotFound("Query not found.")
+
+    def get_companies(self, page: int = 1, search: str = "", size: int = 20) -> Tuple[int, List[Company]]:
+        payload = {"page": page, "search": search, "size": size}
+        companies_data = self.service.request_builder(path=companies_path(), params=payload).json()
+
+        return companies_data.get("count"), [
+            Company(
+                id=company.get("id"),
+                name=company.get("name"),
+                domain=company.get("domain"),
+                is_active=company.get("is_active"),
+                service=self.service,
+            )
+            for company in companies_data.get("results")
+        ]
+
+    def create_company(self, company_name: str) -> Union[str, CantCreate]:
+        payload = {"name": company_name}
+        try:
+            company = self.service.request_builder(method="POST", path=companies_path(), json=payload).json()
+            return f"{company.get('name')} company created successfully"
+
+        except Exception as e:
+            return CantCreate(str(e))
+
+    def update_company(self, company_id: int, company_name: str) -> Union[str, CantUpdate]:
+        payload = {"name": company_name}
+
+        try:
+            company = self.service.request_builder(
+                method="PUT", path=company_detail_path(company_id=company_id), json=payload
+            ).json()
+            return f"{company.get('name')} company successfully renamed."
+
+        except Exception as e:
+            return CantUpdate(str(e))
+
+    def delete_company(self, company_id: int) -> Union[str, CantDelete]:
+        try:
+            self.service.request_builder(method="DELETE", path=company_detail_path(company_id=company_id))
+            return f"Company deleted successfully."
+
+        except Exception as e:
+            return CantDelete(str(e))
+
+    def get_company_by_id(self, company_id: int) -> Company:
+        company = self.service.request_builder(path=company_detail_path(company_id=company_id)).json()
+        return Company(
+            id=company.get("id"),
+            name=company.get("name"),
+            domain=company.get("domain"),
+            is_active=company.get("is_active"),
+            service=self.service,
+        )
+
+    def get_company_by_name(self, company_name: str) -> Company:
+        _, companies = self.get_companies(search=company_name, size=1000)
+        for company in companies:
+            if company_name == company.name:
+                return company
+        raise NotFound("Company not found.")
+
+    def get_domains(self, page: int = 1, search: str = "", size: int = 20) -> Tuple[int, List[Domain]]:
+        payload = {"page": page, "search": search, "size": size}
+        domains_data = self.service.request_builder(path=domains_path(), params=payload).json()
+
+        return domains_data.get("count"), [
+            Domain(
+                id=domain.get("id"),
+                domain=domain.get("domain"),
+                tenant=domain.get("tenant"),
+                tenant_name=domain.get("tenant_name"),
+                service=self.service,
+            )
+            for domain in domains_data.get("results")
+        ]
+
+    def create_domain(self, domain_name: str, company_id: int, is_primary: bool) -> Union[str, CantCreate]:
+        payload = {"domain": domain_name, "tenant": company_id, "is_primary": is_primary}
+        try:
+            domain = self.service.request_builder(method="POST", path=domains_path(), json=payload).json()
+            return f"{domain.get('domain')} domain created successfully"
+
+        except Exception as e:
+            return CantCreate(str(e))
+
+    def update_domain(
+        self, domain_id: int, company_id: int, domain_name: str, is_primary: bool = None
+    ) -> Union[str, CantUpdate]:
+        payload = {"domain": domain_name, "tenant": company_id}
+
+        if is_primary:
+            payload["is_primary"] = is_primary
+        try:
+            domain = self.service.request_builder(
+                method="PUT", path=domain_detail_path(domain_id=domain_id), json=payload
+            ).json()
+            return f"{domain.get('domain')} domain successfully updated."
+
+        except Exception as e:
+            return CantUpdate(str(e))
+
+    def delete_domain(self, domain_id: int) -> Union[str, CantDelete]:
+        try:
+            self.service.request_builder(method="DELETE", path=domain_detail_path(domain_id=domain_id))
+            return f"Domain deleted successfully."
+
+        except Exception as e:
+            return CantDelete(str(e))
+
+    def get_domain_by_id(self, domain_id: int) -> Domain:
+        domain = self.service.request_builder(path=domain_detail_path(domain_id=domain_id)).json()
+        return Domain(
+            id=domain.get("id"),
+            domain=domain.get("domain"),
+            tenant=domain.get("tenant"),
+            tenant_name=domain.get("tenant_name"),
+            service=self.service,
+        )
+
+    def get_domains_by_tenant_name(self, domain_name: str) -> Domain:
+        _, domains = self.get_domains(search=domain_name, size=1000)
+
+        for domain in domains:
+            if domain_name == domain.domain:
+                return domain
+
+        raise NotFound("Domain not found.")
+
+    def get_users(self, page: int = 1, search: str = "", size: int = 20) -> Tuple[int, List[User]]:
+        payload = {"page": page, "search": search, "size": size}
+        users_data = self.service.request_builder(path=users_path(), params=payload).json()
+        return users_data.get("count"), [
+            User(
+                id=user.get("id"),
+                name=user.get("name"),
+                email=user.get("email"),
+                username=user.get("username"),
+                first_name=user.get("first_name"),
+                last_name=user.get("last_name"),
+                is_active=user.get("is_active"),
+                is_ldap=user.get("is_ldap"),
+                groups=user.get("groups"),
+                service=self.service,
+            )
+            for user in users_data.get("results")
+        ]
+
+    def create_user(
+        self, email: str, username: str, first_name: str, last_name: str, group_ids: List[int]
+    ) -> Union[str, CantCreate]:
+        payload = {
+            "email": email,
+            "username": username,
+            "first_name": first_name,
+            "last_name": last_name,
+            "group_ids": group_ids,
+        }
+        try:
+            user = self.service.request_builder(method="POST", path=users_path(), json=payload).json()
+            return f"{user.get('username')} user created successfully"
+
+        except Exception as e:
+            return CantCreate(str(e))
+
+    def update_user(
+        self,
+        user_id: int,
+        username: str,
+        email: str = None,
+        first_name: str = None,
+        last_name: str = None,
+    ) -> Union[str, CantUpdate]:
+        payload = {"username": username}
+
+        if email:
+            payload["email"] = email
+        if first_name:
+            payload["first_name"] = first_name
+        if last_name:
+            payload["last_name"] = last_name
+
+        try:
+            user = self.service.request_builder(
+                method="PUT", path=user_detail_path(user_id=user_id), json=payload
+            ).json()
+            return f"{user.get('username')} user successfully renamed."
+
+        except Exception as e:
+            return CantUpdate(str(e))
+
+    def delete_user(self, user_id: int) -> Union[str, CantDelete]:
+        try:
+            self.service.request_builder(method="DELETE", path=user_detail_path(user_id=user_id))
+            return f"User deleted successfully."
+
+        except Exception as e:
+            return CantDelete(str(e))
+
+    def get_user_by_id(self, user_id: int) -> User:
+        user = self.service.request_builder(path=user_detail_path(user_id=user_id)).json()
+        return User(
+            id=user.get("id"),
+            name=user.get("name"),
+            email=user.get("email"),
+            username=user.get("username"),
+            first_name=user.get("first_name"),
+            last_name=user.get("last_name"),
+            is_active=user.get("is_active"),
+            is_ldap=user.get("is_ldap"),
+            groups=user.get("groups"),
+            service=self.service,
+        )
+
+    def get_user_by_username(self, username: str) -> User:
+        _, users = self.get_users(search=username, size=1000)
+        for user in users:
+            if username == user.username:
+                return user
+        raise NotFound("User not found.")
+
+    def get_groups(self, page: int = 1, search: str = "", size: int = 20) -> Tuple[int, List[Group]]:
+        payload = {"page": page, "search": search, "size": size}
+        groups_data = self.service.request_builder(path=groups_path(), params=payload).json()
+        return groups_data.get("count"), [
+            Group(
+                id=group.get("id"),
+                name=group.get("name"),
+                users_count=group.get("user_count"),
+                service=self.service,
+            )
+            for group in groups_data.get("results")
+        ]
+
+    def get_permissions(self, page: int = 1, search: str = "", size: int = 20) -> Tuple[int, List[Permission]]:
+        payload = {"page": page, "search": search, "size": size}
+        permissions_data = self.service.request_builder(path=permissions_path(), params=payload).json()
+        return permissions_data.get("count"), [
+            Permission(
+                id=permission.get("id"),
+                name=permission.get("name"),
+                app=permission.get("app"),
+                service=self.service,
+            )
+            for permission in permissions_data.get("results")
+        ]
+
+    def create_group(self, group_name: str, permissions: List[int]):
+        payload = {"name": group_name, "permissions": permissions}
+
+        try:
+            group = self.service.request_builder(method="POST", path=groups_path(), json=payload).json()
+            return f"{group.get('name')} group created successfully"
+
+        except Exception as e:
+            return CantCreate(str(e))
+
+    def update_group(
+        self, group_id: int, group_name: str, permissions: List[int] = None, user_ids: List[int] = None
+    ) -> Union[str, CantUpdate]:
+        payload = {"name": group_name}
+
+        if permissions:
+            payload["permissions"] = permissions
+        if user_ids:
+            payload["user_ids"] = user_ids
+
+        try:
+            group = self.service.request_builder(
+                method="PUT", path=group_detail_path(group_id=group_id), json=payload
+            ).json()
+            return f"{group.get('name')} group successfully updated."
+
+        except Exception as e:
+            return CantUpdate(str(e))
+
+    def delete_group(self, group_id: int) -> Union[str, CantDelete]:
+        try:
+            self.service.request_builder(method="DELETE", path=group_detail_path(group_id=group_id))
+            return f"Group deleted successfully."
+
+        except Exception as e:
+            return CantDelete(str(e))
