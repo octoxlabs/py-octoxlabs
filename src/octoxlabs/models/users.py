@@ -1,6 +1,6 @@
 # Standard Library
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Union
+from typing import Dict, List, Union, Optional
 
 # Octoxlabs
 from octoxlabs.service import OctoxLabsService
@@ -22,6 +22,7 @@ class User:
 
     def __str__(self):
         return f"<{self.username}>"
+
 
 @dataclass
 class Group:

@@ -17,6 +17,6 @@ class CantCreate(Exception):
 class CantUpdate(Exception):
     pass
 
+
 class CantDelete(Exception):
     pass
-

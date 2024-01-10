@@ -8,27 +8,27 @@ from .models.discovery import Discovery
 from .models.companies import Domain, Company
 from .models.adapter import Adapter, Connection
 from .models.users import User, Group, Permission
-from .exceptions import NotFound, NoDiscoveryError, CantCreate, CantUpdate, CantDelete
+from .exceptions import NotFound, CantCreate, CantDelete, CantUpdate, NoDiscoveryError
 from .constants.paths import (
+    users_path,
+    groups_path,
     domains_path,
     queries_path,
     adapters_path,
     companies_path,
     ping_pong_path,
     connections_path,
-    connection_detail_path,
     discoveries_path,
+    permissions_path,
+    user_detail_path,
+    group_detail_path,
     query_detail_path,
     device_detail_path,
     device_search_path,
     domain_detail_path,
     company_detail_path,
     last_discovery_path,
-    users_path,
-    user_detail_path,
-    groups_path,
-    group_detail_path,
-    permissions_path,
+    connection_detail_path,
 )
 
 
@@ -107,7 +107,7 @@ class OctoxLabs:
     def delete_connection(self, connection_id: int) -> Union[str, CantDelete]:
         try:
             self.service.request_builder(method="DELETE", path=connection_detail_path(connection_id=connection_id))
-            return f"Connection deleted successfully."
+            return "Connection deleted successfully."
 
         except Exception as e:
             return CantDelete(str(e))
@@ -227,7 +227,7 @@ class OctoxLabs:
     def delete_query(self, query_id: str) -> Union[str, CantDelete]:
         try:
             self.service.request_builder(method="DELETE", path=query_detail_path(query_id=query_id))
-            return f"Query deleted successfully."
+            return "Query deleted successfully."
 
         except Exception as e:
             return CantDelete(str(e))
@@ -294,7 +294,7 @@ class OctoxLabs:
     def delete_company(self, company_id: int) -> Union[str, CantDelete]:
         try:
             self.service.request_builder(method="DELETE", path=company_detail_path(company_id=company_id))
-            return f"Company deleted successfully."
+            return "Company deleted successfully."
 
         except Exception as e:
             return CantDelete(str(e))
@@ -359,7 +359,7 @@ class OctoxLabs:
     def delete_domain(self, domain_id: int) -> Union[str, CantDelete]:
         try:
             self.service.request_builder(method="DELETE", path=domain_detail_path(domain_id=domain_id))
-            return f"Domain deleted successfully."
+            return "Domain deleted successfully."
 
         except Exception as e:
             return CantDelete(str(e))
@@ -448,7 +448,7 @@ class OctoxLabs:
     def delete_user(self, user_id: int) -> Union[str, CantDelete]:
         try:
             self.service.request_builder(method="DELETE", path=user_detail_path(user_id=user_id))
-            return f"User deleted successfully."
+            return "User deleted successfully."
 
         except Exception as e:
             return CantDelete(str(e))
@@ -533,7 +533,7 @@ class OctoxLabs:
     def delete_group(self, group_id: int) -> Union[str, CantDelete]:
         try:
             self.service.request_builder(method="DELETE", path=group_detail_path(group_id=group_id))
-            return f"Group deleted successfully."
+            return "Group deleted successfully."
 
         except Exception as e:
             return CantDelete(str(e))
