@@ -8,6 +8,7 @@ import requests
 
 # Local Folder
 from .exceptions import ApiException
+from .constants.paths import access_token_path
 
 urllib3.disable_warnings()
 
@@ -17,9 +18,10 @@ class OctoxLabsService:
     base_url: str
 
     token: str
-    token_prefix: str = "Octoxlabs"
+    access_token: str
+    token_prefix: str = "Bearer"
 
-    headers: Dict[str, str]
+    headers: Dict[str, str] = None
 
     def __init__(self, ip: str, token: str):
         self.set_ip(ip=ip)
@@ -31,7 +33,10 @@ class OctoxLabsService:
 
     def set_token(self, token: str):
         self.token = token
-        self.headers = {"Authorization": f"{self.token_prefix} {self.token}"}
+        self.access_token = self.request_builder(
+            method="POST", path=access_token_path(), json={"token": self.token}
+        ).json()["access"]
+        self.headers = {"Authorization": f"{self.token_prefix} {self.access_token}"}
 
     def request_builder(
         self,

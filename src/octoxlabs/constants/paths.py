@@ -78,3 +78,7 @@ def group_detail_path(group_id: int) -> str:
 
 def permissions_path() -> str:
     return "/users/permissions"
+
+
+def access_token_path() -> str:
+    return "/api/token/token"

@@ -4,6 +4,10 @@
 # manual tests
 example.py
 
+# python
+__pycache__/
+*.pyc
+*.pyo
 
 # pytest
 .pytest_cache/

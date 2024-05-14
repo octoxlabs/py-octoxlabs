@@ -331,8 +331,8 @@ class OctoxLabs:
             for domain in domains_data.get("results")
         ]
 
-    def create_domain(self, domain_name: str, company_id: int, is_primary: bool) -> Union[str, CantCreate]:
-        payload = {"domain": domain_name, "tenant": company_id, "is_primary": is_primary}
+    def create_domain(self, domain_name: str, company_id: int) -> Union[str, CantCreate]:
+        payload = {"domain": domain_name, "tenant": company_id}
         try:
             domain = self.service.request_builder(method="POST", path=domains_path(), json=payload).json()
             return f"{domain.get('domain')} domain created successfully"
@@ -374,7 +374,7 @@ class OctoxLabs:
             service=self.service,
         )
 
-    def get_domains_by_tenant_name(self, domain_name: str) -> Domain:
+    def get_domains_by_domain_name(self, domain_name: str) -> Domain:
         _, domains = self.get_domains(search=domain_name, size=1000)
 
         for domain in domains:
@@ -426,6 +426,7 @@ class OctoxLabs:
         email: str = None,
         first_name: str = None,
         last_name: str = None,
+        group_ids: List[int] = None,
     ) -> Union[str, CantUpdate]:
         payload = {"username": username}
 
@@ -435,6 +436,8 @@ class OctoxLabs:
             payload["first_name"] = first_name
         if last_name:
             payload["last_name"] = last_name
+        if group_ids:
+            payload["group_ids"] = group_ids
 
         try:
             user = self.service.request_builder(
@@ -503,7 +506,6 @@ class OctoxLabs:
 
     def create_group(self, group_name: str, permissions: List[int]):
         payload = {"name": group_name, "permissions": permissions}
-
         try:
             group = self.service.request_builder(method="POST", path=groups_path(), json=payload).json()
             return f"{group.get('name')} group created successfully"
@@ -512,10 +514,17 @@ class OctoxLabs:
             return CantCreate(str(e))
 
     def update_group(
-        self, group_id: int, group_name: str, permissions: List[int] = None, user_ids: List[int] = None
+        self,
+        group_id: int,
+        group_name: str,
+        permissions: List[int] = None,
+        user_ids: List[int] = None,
+        adapter_ids: List[int] = None,
     ) -> Union[str, CantUpdate]:
         payload = {"name": group_name}
 
+        if adapter_ids:
+            payload["adapter_ids"] = adapter_ids
         if permissions:
             payload["permissions"] = permissions
         if user_ids:
