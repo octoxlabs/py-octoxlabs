@@ -8,6 +8,10 @@ def connections_path() -> str:
     return "/adapters/connections"
 
 
+def connection_detail_path(connection_id: int) -> str:
+    return f"/adapters/connections/{connection_id}"
+
+
 def connection_test_path(connection_id: int) -> str:
     return f"/adapters/test/{connection_id}"
 
@@ -32,9 +36,49 @@ def queries_path() -> str:
     return "/queries/queries"
 
 
-def query_detail_path(query_id: int) -> str:
+def query_detail_path(query_id: str) -> str:
     return f"/queries/queries/{query_id}"
 
 
 def ping_pong_path() -> str:
     return "/api/ping"
+
+
+def companies_path() -> str:
+    return "/companies/companies"
+
+
+def company_detail_path(company_id: int) -> str:
+    return f"/companies/companies/{company_id}"
+
+
+def domains_path() -> str:
+    return "/companies/domains"
+
+
+def domain_detail_path(domain_id: int) -> str:
+    return f"/companies/domains/{domain_id}"
+
+
+def users_path() -> str:
+    return "/users/users"
+
+
+def user_detail_path(user_id: int) -> str:
+    return f"/users/users/{user_id}"
+
+
+def groups_path() -> str:
+    return "/users/groups"
+
+
+def group_detail_path(group_id: int) -> str:
+    return f"/users/groups/{group_id}"
+
+
+def permissions_path() -> str:
+    return "/users/permissions"
+
+
+def access_token_path() -> str:
+    return "/api/token/token"

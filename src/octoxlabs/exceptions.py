@@ -8,3 +8,15 @@ class NoDiscoveryError(Exception):
 
 class NotFound(Exception):
     pass
+
+
+class CantCreate(Exception):
+    pass
+
+
+class CantUpdate(Exception):
+    pass
+
+
+class CantDelete(Exception):
+    pass
