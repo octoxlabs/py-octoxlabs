@@ -9,7 +9,7 @@ def test_adapter_get_connections(adapter_factory, octoxlabs_service, mock_respon
     adapter = adapter_factory.create(service=octoxlabs_service)
     mock_response.add(
         method=responses.GET,
-        url="https://octoxlabs.test:8043/adapters/connections?adapter=1",
+        url="https://octoxlabs.test:8443/adapters/connections?adapter=1",
         body=json.dumps(
             {
                 "count": 1,
@@ -38,7 +38,7 @@ def test_connection_get_adapter(connection_factory, octoxlabs_service, mock_resp
     connection = connection_factory.create(service=octoxlabs_service)
     mock_response.add(
         responses.GET,
-        url="https://octoxlabs.test:8043/adapters/adapters/1",
+        url="https://octoxlabs.test:8443/adapters/adapters/1",
         body=json.dumps(
             {
                 "id": 1,
@@ -61,7 +61,7 @@ def test_connection_connection_test(connection_factory, octoxlabs_service, mock_
     connection = connection_factory.create(service=octoxlabs_service)
     mock_response.add(
         method=responses.POST,
-        url="https://octoxlabs.test:8043/adapters/test/1",
+        url="https://octoxlabs.test:8443/adapters/test/1",
         body=json.dumps({"data": {"detail": "Bad request."}, "status": 400}),
     )
 
