@@ -10,10 +10,15 @@ from octoxlabs.utils import parse_string_datetime
 
 
 def test_octoxlabs_search_devices(mock_response):
+    mock_response.add(
+        method=responses.POST,
+        url="https://octoxlabs.service:8443/api/token/token",
+        body=json.dumps({"access": "api-token"})
+    )
     octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
     mock_response.add(
         method=responses.POST,
-        url="https://octoxlabs.service:8043/assets/assets",
+        url="https://octoxlabs.service:8443/devices/devices",
         body=json.dumps(
             {
                 "count": 300,
@@ -43,10 +48,16 @@ def test_octoxlabs_search_devices(mock_response):
 
 
 def test_octoxlabs_get_device_detail(discovery_factory, mock_response):
+    mock_response.add(
+        method=responses.POST,
+        url="https://octoxlabs.service:8443/api/token/token",
+        body=json.dumps({"access": "api-token"})
+    )
+
     octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
     mock_response.add(
         method=responses.POST,
-        url="https://octoxlabs.service:8043/assets/assets/octoxlabs01",
+        url="https://octoxlabs.service:8443/devices/devices/octoxlabs01",
         body=json.dumps(
             {
                 "IpAddresses": ["127.0.0.1"],
