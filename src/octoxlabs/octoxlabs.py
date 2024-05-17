@@ -210,7 +210,7 @@ class OctoxLabs:
     ) -> Union[str, CantUpdate]:
         payload = {"name": query_name, "text": query_text}
 
-        if is_public:
+        if is_public is True or is_public is False:
             payload["is_public"] = is_public
         if tags:
             payload["tags"] = tags
@@ -345,7 +345,7 @@ class OctoxLabs:
     ) -> Union[str, CantUpdate]:
         payload = {"domain": domain_name, "tenant": company_id}
 
-        if is_primary:
+        if is_primary is True or is_primary is False:
             payload["is_primary"] = is_primary
         try:
             domain = self.service.request_builder(
