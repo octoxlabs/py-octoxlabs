@@ -1,3 +1,6 @@
+# Standard Library
+import json
+
 # Third Party
 import pytest
 import responses
@@ -17,7 +20,12 @@ def mock_response():
 
 
 @pytest.fixture()
-def octoxlabs_service():
+def octoxlabs_service(mock_response):
+    mock_response.add(
+        method=responses.POST,
+        url="https://octoxlabs.test:8443/api/token/token",
+        body=json.dumps({"access": "api-token"}),
+    )
     return OctoxLabsService(ip="octoxlabs.test", token="octoxlabs")
 
 
