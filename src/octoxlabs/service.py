@@ -29,7 +29,7 @@ class OctoxLabsService:
 
     def set_ip(self, ip: str):
         self.ip = ip
-        self.base_url = os.getenv("OCTOXLABS_URL", None) or f"https://{self.ip}:8043"
+        self.base_url = os.getenv("OCTOXLABS_URL", None) or f"https://{self.ip}:8443"
 
     def set_token(self, token: str):
         self.token = token
