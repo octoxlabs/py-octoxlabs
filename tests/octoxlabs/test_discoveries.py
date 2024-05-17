@@ -11,10 +11,15 @@ from octoxlabs.exceptions import NoDiscoveryError
 
 
 def test_octoxlabs_get_discoveries(mock_response):
+    mock_response.add(
+        method=responses.POST,
+        url="https://octoxlabs.service:8443/api/token/token",
+        body=json.dumps({"access": "api-token"})
+    )
     octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
     mock_response.add(
         method=responses.GET,
-        url="https://octoxlabs.service:8043/discoveries/discoveries",
+        url="https://octoxlabs.service:8443/discoveries/discoveries",
         body=json.dumps(
             {
                 "count": 1,
@@ -37,10 +42,15 @@ def test_octoxlabs_get_discoveries(mock_response):
 
 
 def test_octoxlabs_get_last_discovery(mock_response):
+    mock_response.add(
+        method=responses.POST,
+        url="https://octoxlabs.service:8443/api/token/token",
+        body=json.dumps({"access": "api-token"})
+    )
     octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
     mock_response.add(
         method=responses.GET,
-        url="https://octoxlabs.service:8043/discoveries/last",
+        url="https://octoxlabs.service:8443/discoveries/last",
         body=json.dumps(
             {
                 "id": 1,
@@ -57,7 +67,7 @@ def test_octoxlabs_get_last_discovery(mock_response):
 
     mock_response.add(
         method=responses.GET,
-        url="https://octoxlabs.service:8043/discoveries/last",
+        url="https://octoxlabs.service:8443/discoveries/last",
         body=json.dumps(
             {
                 "status": 2,

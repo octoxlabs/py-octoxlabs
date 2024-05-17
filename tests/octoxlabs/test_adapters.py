@@ -9,10 +9,15 @@ from octoxlabs import OctoxLabs
 
 
 def test_octoxlabs_get_adapters(mock_response):
+    mock_response.add(
+        method=responses.POST,
+        url="https://octoxlabs.service:8443/api/token/token",
+        body=json.dumps({"access": "api-token"})
+    )
     octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
     mock_response.add(
         method=responses.GET,
-        url="https://octoxlabs.service:8043/adapters/adapters?search=octox&size=1&page=1",
+        url="https://octoxlabs.service:8443/adapters/adapters?search=octox&size=1&page=1",
         body=json.dumps(
             {
                 "count": 1,
@@ -38,10 +43,16 @@ def test_octoxlabs_get_adapters(mock_response):
 
 
 def test_octoxlabs_get_connections(adapter_factory, mock_response):
+    mock_response.add(
+        method=responses.POST,
+        url="https://octoxlabs.service:8443/api/token/token",
+        body=json.dumps({"access": "api-token"})
+    )
+
     octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
     mock_response.add(
         method=responses.GET,
-        url="https://octoxlabs.service:8043/adapters/connections?adapter=1&page=1&search=&size=20",
+        url="https://octoxlabs.service:8443/adapters/connections?adapter=1&page=1&search=&size=20",
         body=json.dumps(
             {
                 "count": 1,
