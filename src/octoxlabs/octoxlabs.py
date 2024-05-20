@@ -206,12 +206,10 @@ class OctoxLabs:
             return CantCreate(str(e))
 
     def update_query(
-        self, query_id: str, query_name: str, query_text: str, is_public: bool = None, tags: List[int] = None
+        self, query_id: str, query_name: str, query_text: str, is_public: bool = False, tags: List[int] = None
     ) -> Union[str, CantUpdate]:
-        payload = {"name": query_name, "text": query_text}
+        payload = {"name": query_name, "text": query_text, "is_public": is_public}
 
-        if is_public is True or is_public is False:
-            payload["is_public"] = is_public
         if tags:
             payload["tags"] = tags
 
@@ -341,12 +339,10 @@ class OctoxLabs:
             return CantCreate(str(e))
 
     def update_domain(
-        self, domain_id: int, company_id: int, domain_name: str, is_primary: bool = None
+        self, domain_id: int, company_id: int, domain_name: str, is_primary: bool = False
     ) -> Union[str, CantUpdate]:
-        payload = {"domain": domain_name, "tenant": company_id}
+        payload = {"domain": domain_name, "tenant": company_id, "is_primary": is_primary}
 
-        if is_primary is True or is_primary is False:
-            payload["is_primary"] = is_primary
         try:
             domain = self.service.request_builder(
                 method="PUT", path=domain_detail_path(domain_id=domain_id), json=payload
