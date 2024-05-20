@@ -14,7 +14,7 @@ def test_octoxlabs_get_discoveries(mock_response):
     mock_response.add(
         method=responses.POST,
         url="https://octoxlabs.service:8443/api/token/token",
-        body=json.dumps({"access": "api-token"})
+        body=json.dumps({"access": "api-token"}),
     )
     octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
     mock_response.add(
@@ -45,7 +45,7 @@ def test_octoxlabs_get_last_discovery(mock_response):
     mock_response.add(
         method=responses.POST,
         url="https://octoxlabs.service:8443/api/token/token",
-        body=json.dumps({"access": "api-token"})
+        body=json.dumps({"access": "api-token"}),
     )
     octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
     mock_response.add(

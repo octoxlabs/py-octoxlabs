@@ -1,9 +1,8 @@
 # Standard Library
 import json
 
-import pytest
-
 # Third Party
+import pytest
 import responses
 
 # Octoxlabs

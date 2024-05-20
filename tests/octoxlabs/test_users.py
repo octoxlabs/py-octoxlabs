@@ -2,8 +2,8 @@
 import json
 
 # Third Party
-import responses
 import pytest
+import responses
 
 # Octoxlabs
 from octoxlabs.exceptions import NotFound

@@ -2,8 +2,8 @@
 import json
 
 # Third Party
-import responses
 import pytest
+import responses
 
 # Octoxlabs
 from octoxlabs.exceptions import NotFound
@@ -138,6 +138,7 @@ def test_octoxlabs_get_domains(mock_response, octoxlabs_client):
     assert count == 1
     assert domains[0].tenant_name == "Octoxlabs"
 
+
 def test_octoxlabs_create_domain(mock_response, octoxlabs_client):
     octoxlabs = octoxlabs_client
 
@@ -155,6 +156,7 @@ def test_octoxlabs_create_domain(mock_response, octoxlabs_client):
     create_message = octoxlabs.create_domain(domain_name="localhost", company_id=1)
 
     assert create_message == "localhost domain created successfully"
+
 
 def test_octoxlabs_update_domain(mock_response, octoxlabs_client):
     octoxlabs = octoxlabs_client
@@ -175,17 +177,17 @@ def test_octoxlabs_update_domain(mock_response, octoxlabs_client):
 
     assert update_message == "localhost domain successfully updated."
 
+
 def test_octoxlabs_delete_domain(mock_response, octoxlabs_client):
     octoxlabs = octoxlabs_client
 
-    mock_response.add(
-        method=responses.DELETE,
-        url="https://octoxlabs.service:8443/companies/domains/1"
-    )
+    mock_response.add(method=responses.DELETE, url="https://octoxlabs.service:8443/companies/domains/1")
 
     delete_message = octoxlabs.delete_domain(domain_id=1)
 
     assert delete_message == "Domain deleted successfully."
+
+
 def test_octoxlabs_domains_by_id(mock_response, octoxlabs_client):
     octoxlabs = octoxlabs_client
 
