@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union, Optional
 
 # Local Folder
 from .models.query import Query
@@ -17,10 +17,12 @@ from .constants.paths import (
     adapters_path,
     companies_path,
     ping_pong_path,
+    avm_search_path,
     connections_path,
     discoveries_path,
     permissions_path,
     user_detail_path,
+    user_search_path,
     group_detail_path,
     query_detail_path,
     device_detail_path,
@@ -29,6 +31,9 @@ from .constants.paths import (
     company_detail_path,
     last_discovery_path,
     connection_detail_path,
+    application_search_path,
+    user_inventory_detail_path,
+    application_inventory_detail_path,
 )
 
 
@@ -138,6 +143,30 @@ class OctoxLabs:
             )
         raise NoDiscoveryError("No discovery.")
 
+    def search_scroll_devices(
+        self,
+        query: str = "",
+        scroll_id: Optional[str] = None,
+        fields: List[str] = None,
+        size: int = 50,
+        discovery_id: int = None,
+        discovery: Discovery = None,
+        ordering: List[Dict[str, str]] = None,
+    ) -> Tuple[int, str, List[Dict[str, List[Any]]]]:
+        payload = {
+            "query": query,
+            "fields": fields,
+            "size": size,
+            "index_id": discovery.id if discovery else discovery_id or None,
+            "ordering": ordering or [],
+            "scrollable": True,
+        }
+        if scroll_id:
+            payload["scroll_id"] = scroll_id
+
+        data = self.service.request_builder(method="POST", path=device_search_path(), json=payload).json()
+        return data.get("count"), data.get("scroll_id"), data.get("results")
+
     def search_devices(
         self,
         query: str = "",
@@ -159,12 +188,157 @@ class OctoxLabs:
         data = self.service.request_builder(method="POST", path=device_search_path(), json=payload).json()
         return data.get("count"), data.get("results")
 
+    def search_scroll_users(
+        self,
+        query: str = "",
+        scroll_id: Optional[str] = None,
+        fields: List[str] = None,
+        size: int = 50,
+        discovery_id: int = None,
+        discovery: Discovery = None,
+        ordering: List[Dict[str, str]] = None,
+    ):
+        payload = {
+            "query": query,
+            "fields": fields,
+            "size": size,
+            "index_id": discovery.id if discovery else discovery_id or None,
+            "ordering": ordering or [],
+            "scrollable": True,
+        }
+        if scroll_id:
+            payload["scroll_id"] = scroll_id
+
+        data = self.service.request_builder(method="POST", path=user_search_path(), json=payload).json()
+        return data.get("count"), data.get("scroll_id"), data.get("results")
+
+    def search_users(
+        self,
+        query: str = "",
+        fields: List[str] = None,
+        page: int = 1,
+        size: int = 50,
+        discovery_id: int = None,
+        discovery: Discovery = None,
+        ordering: List[Dict[str, str]] = None,
+    ) -> Tuple[int, List[Dict[str, List[Any]]]]:
+        payload = {
+            "query": query,
+            "fields": fields,
+            "page": page,
+            "size": size,
+            "index_id": discovery.id if discovery else discovery_id or None,
+            "ordering": ordering or [],
+        }
+        data = self.service.request_builder(method="POST", path=user_search_path(), json=payload).json()
+        return data.get("count"), data.get("results")
+
+    def search_scroll_applications(
+        self,
+        query: str = "",
+        scroll_id: Optional[str] = None,
+        fields: List[str] = None,
+        size: int = 50,
+        discovery_id: int = None,
+        discovery: Discovery = None,
+        ordering: List[Dict[str, str]] = None,
+    ):
+        payload = {
+            "query": query,
+            "fields": fields,
+            "size": size,
+            "index_id": discovery.id if discovery else discovery_id or None,
+            "ordering": ordering or [],
+            "scrollable": True,
+        }
+        if scroll_id:
+            payload["scroll_id"] = scroll_id
+
+        data = self.service.request_builder(method="POST", path=application_search_path(), json=payload).json()
+        return data.get("count"), data.get("scroll_id"), data.get("results")
+
+    def search_applications(
+        self,
+        query: str = "",
+        fields: List[str] = None,
+        page: int = 1,
+        size: int = 50,
+        discovery_id: int = None,
+        discovery: Discovery = None,
+        ordering: List[Dict[str, str]] = None,
+    ) -> Tuple[int, List[Dict[str, List[Any]]]]:
+        payload = {
+            "query": query,
+            "fields": fields,
+            "page": page,
+            "size": size,
+            "index_id": discovery.id if discovery else discovery_id or None,
+            "ordering": ordering or [],
+        }
+
+        data = self.service.request_builder(method="POST", path=application_search_path(), json=payload).json()
+        return data.get("count"), data.get("results")
+
+    def search_scroll_avm(
+        self,
+        query: str = "",
+        scroll_id: Optional[str] = None,
+        size: int = 50,
+        discovery_id: int = None,
+        discovery: Discovery = None,
+    ):
+        payload = {
+            "query": query,
+            "size": size,
+            "index_id": discovery.id if discovery else discovery_id or None,
+            "scrollable": True,
+        }
+        if scroll_id:
+            payload["scroll_id"] = scroll_id
+
+        data = self.service.request_builder(method="POST", path=avm_search_path(), json=payload).json()
+        return data.get("count"), data.get("scroll_id"), data.get("results")
+
+    def search_avm(
+        self,
+        query: str = "",
+        page: int = 1,
+        size: int = 50,
+        discovery_id: int = None,
+        discovery: Discovery = None,
+    ) -> Tuple[int, List[Dict[str, List[Any]]]]:
+        payload = {
+            "query": query,
+            "page": page,
+            "size": size,
+            "index_id": discovery.id if discovery else discovery_id or None,
+        }
+
+        data = self.service.request_builder(method="POST", path=avm_search_path(), json=payload).json()
+        return data.get("count"), data.get("results")
+
     def get_device_detail(
         self, hostname: str, discovery: Discovery = None, discovery_id: int = None
     ) -> Dict[str, List[Any]]:
         payload = {"index_id": discovery.id if discovery else discovery_id or self.get_last_discovery().id}
         return self.service.request_builder(
             method="POST", path=device_detail_path(hostname=hostname), json=payload
+        ).json()
+
+    def get_user_inventory_detail(
+        self, username: str, discovery: Discovery = None, discovery_id: int = None
+    ) -> Dict[str, List[Any]]:
+        payload = {"index_id": discovery.id if discovery else discovery_id or self.get_last_discovery().id}
+        return self.service.request_builder(
+            method="POST", path=user_inventory_detail_path(username=username), json=payload
+        ).json()
+
+    def get_application_detail(
+        self, application_id: str, discovery: Discovery = None, discovery_id: int = None
+    ) -> Dict[str, List[Any]]:
+        payload = {"index_id": discovery.id if discovery else discovery_id or self.get_last_discovery().id}
+        return self.service.request_builder(
+            method="POST", path=application_inventory_detail_path(application_id=application_id), json=payload
         ).json()
 
     def get_queries(self, page: int = 1, search: str = "", size: int = 20) -> Tuple[int, List[Query]]:

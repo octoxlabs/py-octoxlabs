@@ -47,6 +47,56 @@ def test_octoxlabs_search_devices(mock_response):
     assert parsed_first_fetch_time.year == 2022
 
 
+def test_octoxlabs_search_scroll_devices(mock_response):
+    mock_response.add(
+        method=responses.POST,
+        url="https://octoxlabs.service:8443/api/token/token",
+        body=json.dumps({"access": "api-token"}),
+    )
+    octoxlabs = OctoxLabs(ip="octoxlabs.service", token="octoxlabs")
+    mock_response.add(
+        method=responses.POST,
+        url="https://octoxlabs.service:8443/devices/devices",
+        body=json.dumps(
+            {
+                "count": 1,
+                "scroll_id": "octoxlabs-scroll-id",
+                "results": [
+                    {
+                        "IpAddresses": ["127.0.0.1"],
+                        "Category": ["Server"],
+                        "FirstFetchTime": ["2022-05-17T16:05:24.991Z"],
+                        "Adapters": ["imperva-dam", "falcon-crowdstrike", "fireeye-hx"],
+                        "Hostname": ["octoxlabs01"],
+                        "OS.Type": ["Linux"],
+                        "Domain": ["octoxlabs.com"],
+                    }
+                ],
+            }
+        ),
+    )
+    count, scroll_id, assets = octoxlabs.search_scroll_devices()
+    asset = assets[0]
+    assert count == 1
+    assert asset["IpAddresses"] == ["127.0.0.1"]
+
+    mock_response.add(
+        method=responses.POST,
+        url="https://octoxlabs.service:8443/devices/devices",
+        body=json.dumps(
+            {
+                "count": 1,
+                "scroll_id": "octoxlabs-scroll-id",
+                "results": [],
+            }
+        ),
+    )
+
+    count, scroll_id, assets = octoxlabs.search_scroll_devices(scroll_id="octoxlabs-scroll-id")
+    assert count == 1
+    assert assets == []
+
+
 def test_octoxlabs_get_device_detail(discovery_factory, mock_response):
     mock_response.add(
         method=responses.POST,
