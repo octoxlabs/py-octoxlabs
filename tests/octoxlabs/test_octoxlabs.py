@@ -19,6 +19,14 @@ def test_octoxlabs_init(mock_response):
     assert octoxlabs.service.ip == "octoxlabs.test"
     assert octoxlabs.service.token == "octoxlabs"
 
+    proxy_octoxlabs = OctoxLabs(
+        ip="octoxlabs.test", token="octoxlabs", http_proxy="http_proxy", https_proxy="https_proxy", no_verify=False
+    )
+
+    assert proxy_octoxlabs.service.http_proxy == "http_proxy"
+    assert proxy_octoxlabs.service.https_proxy == "https_proxy"
+    assert proxy_octoxlabs.service.no_verify is False
+
 
 def test_octoxlabs_ping(mock_response):
     mock_response.add(

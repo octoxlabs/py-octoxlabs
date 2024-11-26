@@ -40,8 +40,10 @@ from .constants.paths import (
 class OctoxLabs:
     service: OctoxLabsService
 
-    def __init__(self, ip: str, token: str):
-        self.service = OctoxLabsService(ip=ip, token=token)
+    def __init__(self, ip: str, token: str, http_proxy: str = None, https_proxy: str = None, no_verify: bool = True):
+        self.service = OctoxLabsService(
+            ip=ip, token=token, http_proxy=http_proxy, https_proxy=https_proxy, no_verify=no_verify
+        )
 
     def ping(self):
         response = self.service.request_builder(path=ping_pong_path()).json()
