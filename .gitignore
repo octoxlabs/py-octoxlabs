@@ -1,6 +1,9 @@
 # jetbrains
 .idea/
 
+# virtualenv
+venv/
+
 # manual tests
 example.py
 

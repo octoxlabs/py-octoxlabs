@@ -28,8 +28,28 @@ def device_search_path() -> str:
     return "/devices/devices"
 
 
+def user_search_path() -> str:
+    return "/userinventory/users"
+
+
+def application_search_path() -> str:
+    return "/appinventory/applications"
+
+
+def avm_search_path() -> str:
+    return "/avm/vulnerabilities"
+
+
 def device_detail_path(hostname: str) -> str:
     return f"/devices/devices/{hostname}"
+
+
+def user_inventory_detail_path(username: str) -> str:
+    return f"/userinventory/users/{username}"
+
+
+def application_inventory_detail_path(application_id: str) -> str:
+    return f"/appinventory/applications/{application_id}"
 
 
 def queries_path() -> str:

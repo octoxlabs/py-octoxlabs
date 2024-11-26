@@ -21,11 +21,16 @@ class OctoxLabsService:
     access_token: str
     token_prefix: str = "Bearer"
 
+    https_proxy: str = None
+    no_verify: bool = True
+
     headers: Dict[str, str] = None
 
-    def __init__(self, ip: str, token: str):
+    def __init__(self, ip: str, token: str, https_proxy: str = None, no_verify: bool = True):
         self.set_ip(ip=ip)
         self.set_token(token=token)
+        self.https_proxy = https_proxy
+        self.no_verify = no_verify
 
     def set_ip(self, ip: str):
         self.ip = ip
@@ -50,7 +55,8 @@ class OctoxLabsService:
             url=f"{self.base_url}{path}",
             params=params,
             headers=self.headers,
-            verify=False,
+            verify=not self.no_verify,
+            proxies={"https": self.https_proxy} if self.https_proxy else None,
             **kwargs,
         )
         if response.status_code > 299:
