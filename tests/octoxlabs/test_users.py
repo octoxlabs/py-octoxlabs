@@ -58,7 +58,7 @@ def test_octoxlabs_create_user(mock_response, octoxlabs_client):
 
     create_message = octoxlabs.create_user(**body)
 
-    assert create_message == "test user created successfully"
+    assert create_message == "test user created successfully."
 
 
 def test_octoxlabs_update_user(mock_response, octoxlabs_client):
@@ -185,7 +185,7 @@ def test_octoxlabs_create_group(mock_response, octoxlabs_client):
         body=json.dumps({"id": 1, "name": "created-group"}),
     )
     create_message = octoxlabs.create_group(group_name="created-group", permissions=[1, 2, 3, 4])
-    assert create_message == "created-group group created successfully"
+    assert create_message == "created-group group created successfully."
 
 
 def test_octoxlabs_update_group(mock_response, octoxlabs_client):

@@ -60,7 +60,7 @@ def test_octoxlabs_create_query(mock_response, octoxlabs_client):
         query_name="Octoxlabs", query_text="Hostname = Octoxlabs", is_public=True, tags="octo-tag"
     )
 
-    assert create_message == "Octoxlabs query created successfully"
+    assert create_message == "Octoxlabs query created successfully."
 
 
 def test_octoxlabs_update_query(mock_response, octoxlabs_client):

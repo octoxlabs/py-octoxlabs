@@ -102,3 +102,19 @@ def permissions_path() -> str:
 
 def access_token_path() -> str:
     return "/api/token/token"
+
+
+def dashboards_path() -> str:
+    return "/dashboards/dashboards"
+
+
+def dashboard_detail_path(dashboard_id: int) -> str:
+    return f"/dashboards/dashboards/{dashboard_id}"
+
+
+def charts_path() -> str:
+    return "/dashboards/charts"
+
+
+def chart_detail_path(chart_id: int) -> str:
+    return f"/dashboards/charts/{chart_id}"
