@@ -41,7 +41,7 @@ def test_octoxlabs_create_company(mock_response, octoxlabs_client):
 
     company_message = octoxlabs.create_company(company_name="Octoxlabs")
 
-    assert company_message == "Octoxlabs company created successfully"
+    assert company_message == "Octoxlabs company created successfully."
 
 
 def test_octoxlabs_update_company(mock_response, octoxlabs_client):
@@ -155,7 +155,7 @@ def test_octoxlabs_create_domain(mock_response, octoxlabs_client):
     )
     create_message = octoxlabs.create_domain(domain_name="localhost", company_id=1)
 
-    assert create_message == "localhost domain created successfully"
+    assert create_message == "localhost domain created successfully."
 
 
 def test_octoxlabs_update_domain(mock_response, octoxlabs_client):

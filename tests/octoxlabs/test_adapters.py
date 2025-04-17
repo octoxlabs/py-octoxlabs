@@ -2,7 +2,6 @@
 import json
 
 # Third Party
-import pytest
 import responses
 
 # Octoxlabs
@@ -107,7 +106,7 @@ def test_octoxlabs_create_connection(mock_response, octoxlabs_client):
         option_connections=[{"name": "test-option", "typed_value": False, "is_sensitive": False}],
     )
 
-    assert connection_message == "test-connection connection created successfully"
+    assert connection_message == "test-connection connection created successfully."
 
 
 def test_octoxlabs_delete_connection(mock_response, octoxlabs_client):

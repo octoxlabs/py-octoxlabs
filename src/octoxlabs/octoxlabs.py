@@ -7,10 +7,12 @@ from .service import OctoxLabsService
 from .models.discovery import Discovery
 from .models.companies import Domain, Company
 from .models.adapter import Adapter, Connection
+from .models.dashboards import Chart, Dashboard
 from .models.users import User, Group, Permission
 from .exceptions import NotFound, CantCreate, CantDelete, CantUpdate, NoDiscoveryError
 from .constants.paths import (
     users_path,
+    charts_path,
     groups_path,
     domains_path,
     queries_path,
@@ -18,11 +20,13 @@ from .constants.paths import (
     companies_path,
     ping_pong_path,
     avm_search_path,
+    dashboards_path,
     connections_path,
     discoveries_path,
     permissions_path,
     user_detail_path,
     user_search_path,
+    chart_detail_path,
     group_detail_path,
     query_detail_path,
     device_detail_path,
@@ -30,6 +34,7 @@ from .constants.paths import (
     domain_detail_path,
     company_detail_path,
     last_discovery_path,
+    dashboard_detail_path,
     connection_detail_path,
     application_search_path,
     user_inventory_detail_path,
@@ -41,9 +46,7 @@ class OctoxLabs:
     service: OctoxLabsService
 
     def __init__(self, ip: str, token: str, https_proxy: str = None, no_verify: bool = True):
-        self.service = OctoxLabsService(
-            ip=ip, token=token, https_proxy=https_proxy, no_verify=no_verify
-        )
+        self.service = OctoxLabsService(ip=ip, token=token, https_proxy=https_proxy, no_verify=no_verify)
 
     def ping(self):
         response = self.service.request_builder(path=ping_pong_path()).json()
@@ -106,7 +109,7 @@ class OctoxLabs:
 
         try:
             connection = self.service.request_builder(method="POST", path=connections_path(), json=payload).json()
-            return f"{connection.get('name')} connection created successfully"
+            return f"{connection.get('name')} connection created successfully."
 
         except Exception as e:
             return CantCreate(str(e))
@@ -376,7 +379,7 @@ class OctoxLabs:
 
         try:
             query = self.service.request_builder(method="POST", path=queries_path(), json=payload).json()
-            return f"{query.get('name')} query created successfully"
+            return f"{query.get('name')} query created successfully."
 
         except Exception as e:
             return CantCreate(str(e))
@@ -448,7 +451,7 @@ class OctoxLabs:
         payload = {"name": company_name}
         try:
             company = self.service.request_builder(method="POST", path=companies_path(), json=payload).json()
-            return f"{company.get('name')} company created successfully"
+            return f"{company.get('name')} company created successfully."
 
         except Exception as e:
             return CantCreate(str(e))
@@ -509,7 +512,7 @@ class OctoxLabs:
         payload = {"domain": domain_name, "tenant": company_id}
         try:
             domain = self.service.request_builder(method="POST", path=domains_path(), json=payload).json()
-            return f"{domain.get('domain')} domain created successfully"
+            return f"{domain.get('domain')} domain created successfully."
 
         except Exception as e:
             return CantCreate(str(e))
@@ -586,7 +589,7 @@ class OctoxLabs:
         }
         try:
             user = self.service.request_builder(method="POST", path=users_path(), json=payload).json()
-            return f"{user.get('username')} user created successfully"
+            return f"{user.get('username')} user created successfully."
 
         except Exception as e:
             return CantCreate(str(e))
@@ -680,7 +683,7 @@ class OctoxLabs:
         payload = {"name": group_name, "permissions": permissions}
         try:
             group = self.service.request_builder(method="POST", path=groups_path(), json=payload).json()
-            return f"{group.get('name')} group created successfully"
+            return f"{group.get('name')} group created successfully."
 
         except Exception as e:
             return CantCreate(str(e))
@@ -718,3 +721,113 @@ class OctoxLabs:
 
         except Exception as e:
             return CantDelete(str(e))
+
+    def get_dashboards(self, page: int = 1, size: int = 20) -> Tuple[int, List[Dashboard]]:
+        payload = {"page": page, "size": size}
+        dashboards_data = self.service.request_builder(path=dashboards_path(), params=payload).json()
+        return dashboards_data.get("count"), [
+            Dashboard(
+                id=dashboard.get("id"),
+                name=dashboard.get("name"),
+                description=dashboard.get("description"),
+                is_public=dashboard.get("is_public"),
+                hr_groups=dashboard.get("hr_groups"),
+                service=self.service,
+            )
+            for dashboard in dashboards_data.get("results")
+        ]
+
+    def get_dashboard_by_id(self, dashboard_id: int) -> Dashboard:
+        dashboard = self.service.request_builder(path=dashboard_detail_path(dashboard_id=dashboard_id)).json()
+        return Dashboard(
+            id=dashboard.get("id"),
+            name=dashboard.get("name"),
+            description=dashboard.get("description"),
+            is_public=dashboard.get("is_public"),
+            hr_groups=dashboard.get("hr_groups"),
+            service=self.service,
+        )
+
+    def create_dashboard(
+        self, dashboard_name: str, dashboard_description: str = None, is_public: bool = True, groups: List[int] = None
+    ) -> Union[str, CantCreate]:
+        payload = {"name": dashboard_name, "description": dashboard_description, "is_public": is_public}
+
+        if dashboard_description:
+            payload["description"] = dashboard_description
+        if not is_public and groups:
+            payload["groups"] = groups
+
+        try:
+            dashboard = self.service.request_builder(method="POST", path=dashboards_path(), json=payload).json()
+            return f"{dashboard.get('name')} dashboard created successfully."
+
+        except Exception as e:
+            return CantCreate(str(e))
+
+    def update_dashboard(
+        self,
+        dashboard_id: int,
+        dashboard_name: str,
+        description: str = None,
+        groups: List[int] = None,
+        is_public: bool = None,
+    ) -> Union[str, CantUpdate]:
+        payload = {"name": dashboard_name}
+
+        if description:
+            payload["description"] = description
+        if groups:
+            payload["groups"] = groups
+        if is_public is not None:
+            payload["is_public"] = is_public
+
+        try:
+            dashboard = self.service.request_builder(
+                method="PUT", path=dashboard_detail_path(dashboard_id=dashboard_id), json=payload
+            ).json()
+            return f"{dashboard.get('name')} dashboard successfully updated."
+
+        except Exception as e:
+            return CantUpdate(str(e))
+
+    def delete_dashboard(self, dashboard_id: int) -> Union[str, CantDelete]:
+        try:
+            self.service.request_builder(method="DELETE", path=dashboard_detail_path(dashboard_id=dashboard_id))
+            return "Dashboard deleted successfully."
+
+        except Exception as e:
+            return CantDelete(str(e))
+
+    def get_charts(self, page: int = 1, size: int = 20, dashboard_id: int = None) -> Tuple[int, List[Chart]]:
+        payload = {"page": page, "size": size}
+        if dashboard_id:
+            payload["dashboard"] = dashboard_id
+
+        charts_data = self.service.request_builder(path=charts_path(), params=payload).json()
+        return charts_data.get("count"), [
+            Chart(
+                id=chart.get("id"),
+                name=chart.get("name"),
+                dashboard_name=chart.get("dashboard_name"),
+                description=chart.get("description"),
+                group_by_data=chart.get("group_by_data"),
+                group_by_query=chart.get("group_by_query"),
+                group_by_query_name=chart.get("group_by_query_name"),
+                rows=chart.get("rows"),
+            )
+            for chart in charts_data.get("results")
+        ]
+
+    def get_chart_by_id(self, chart_id: int) -> Chart:
+        chart = self.service.request_builder(path=chart_detail_path(chart_id=chart_id)).json()
+        return Chart(
+            id=chart.get("id"),
+            name=chart.get("name"),
+            dashboard_name=chart.get("dashboard_name"),
+            description=chart.get("description"),
+            group_by_data=chart.get("group_by_data"),
+            group_by_query=chart.get("group_by_query"),
+            group_by_query_name=chart.get("group_by_query_name"),
+            rows=chart.get("rows"),
+        )
