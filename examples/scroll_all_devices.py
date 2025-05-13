@@ -18,7 +18,7 @@ print(f"Total device count: {count}")
 def prepare_device_instance(data):
     line = []
     for f in fields:
-        value = device.get(f, "")
+        value = data.get(f, "")
         if value:
             value = "|".join(value) if len(value) > 1 else value[0]
         line.append(str(value))
