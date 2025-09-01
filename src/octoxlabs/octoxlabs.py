@@ -34,11 +34,15 @@ from .constants.paths import (
     domain_detail_path,
     company_detail_path,
     last_discovery_path,
+    service_search_path,
     dashboard_detail_path,
     connection_detail_path,
     application_search_path,
+    certificate_search_path,
     user_inventory_detail_path,
+    service_inventory_detail_path,
     application_inventory_detail_path,
+    certificate_inventory_detail_path,
 )
 
 
@@ -322,6 +326,96 @@ class OctoxLabs:
         data = self.service.request_builder(method="POST", path=avm_search_path(), json=payload).json()
         return data.get("count"), data.get("results")
 
+    def search_scroll_certificates(
+        self,
+        query: str = "",
+        scroll_id: Optional[str] = None,
+        fields: List[str] = None,
+        size: int = 50,
+        discovery_id: int = None,
+        discovery: Discovery = None,
+        ordering: List[Dict[str, str]] = None,
+    ) -> Tuple[int, str, List[Dict[str, List[Any]]]]:
+        payload = {
+            "query": query,
+            "fields": fields,
+            "size": size,
+            "index_id": discovery.id if discovery else discovery_id or None,
+            "ordering": ordering or [],
+            "scrollable": True,
+        }
+        if scroll_id:
+            payload["scroll_id"] = scroll_id
+
+        data = self.service.request_builder(method="POST", path=certificate_search_path(), json=payload).json()
+        return data.get("count"), data.get("scroll_id"), data.get("results")
+
+    def search_certificates(
+        self,
+        query: str = "",
+        fields: List[str] = None,
+        page: int = 1,
+        size: int = 50,
+        discovery_id: int = None,
+        discovery: Discovery = None,
+        ordering: List[Dict[str, str]] = None,
+    ) -> Tuple[int, List[Dict[str, List[Any]]]]:
+        payload = {
+            "query": query,
+            "fields": fields,
+            "page": page,
+            "size": size,
+            "index_id": discovery.id if discovery else discovery_id or None,
+            "ordering": ordering or [],
+        }
+        data = self.service.request_builder(method="POST", path=certificate_search_path(), json=payload).json()
+        return data.get("count"), data.get("results")
+
+    def search_scroll_services(
+        self,
+        query: str = "",
+        scroll_id: Optional[str] = None,
+        fields: List[str] = None,
+        size: int = 50,
+        discovery_id: int = None,
+        discovery: Discovery = None,
+        ordering: List[Dict[str, str]] = None,
+    ) -> Tuple[int, str, List[Dict[str, List[Any]]]]:
+        payload = {
+            "query": query,
+            "fields": fields,
+            "size": size,
+            "index_id": discovery.id if discovery else discovery_id or None,
+            "ordering": ordering or [],
+            "scrollable": True,
+        }
+        if scroll_id:
+            payload["scroll_id"] = scroll_id
+
+        data = self.service.request_builder(method="POST", path=service_search_path(), json=payload).json()
+        return data.get("count"), data.get("scroll_id"), data.get("results")
+
+    def search_services(
+        self,
+        query: str = "",
+        fields: List[str] = None,
+        page: int = 1,
+        size: int = 50,
+        discovery_id: int = None,
+        discovery: Discovery = None,
+        ordering: List[Dict[str, str]] = None,
+    ) -> Tuple[int, List[Dict[str, List[Any]]]]:
+        payload = {
+            "query": query,
+            "fields": fields,
+            "page": page,
+            "size": size,
+            "index_id": discovery.id if discovery else discovery_id or None,
+            "ordering": ordering or [],
+        }
+        data = self.service.request_builder(method="POST", path=service_search_path(), json=payload).json()
+        return data.get("count"), data.get("results")
+
     def get_device_detail(
         self, hostname: str, discovery: Discovery = None, discovery_id: int = None
     ) -> Dict[str, List[Any]]:
@@ -344,6 +438,22 @@ class OctoxLabs:
         payload = {"index_id": discovery.id if discovery else discovery_id or self.get_last_discovery().id}
         return self.service.request_builder(
             method="POST", path=application_inventory_detail_path(application_id=application_id), json=payload
+        ).json()
+
+    def get_certificate_detail(
+        self, certificate_id: str, discovery: Discovery = None, discovery_id: int = None
+    ) -> Dict[str, List[Any]]:
+        payload = {"index_id": discovery.id if discovery else discovery_id or self.get_last_discovery().id}
+        return self.service.request_builder(
+            method="POST", path=certificate_inventory_detail_path(certificate_id=certificate_id), json=payload
+        ).json()
+
+    def get_service_detail(
+        self, service_id: str, discovery: Discovery = None, discovery_id: int = None
+    ) -> Dict[str, List[Any]]:
+        payload = {"index_id": discovery.id if discovery else discovery_id or self.get_last_discovery().id}
+        return self.service.request_builder(
+            method="POST", path=service_inventory_detail_path(service_id=service_id), json=payload
         ).json()
 
     def get_queries(self, page: int = 1, search: str = "", size: int = 20) -> Tuple[int, List[Query]]:
