@@ -40,6 +40,14 @@ def avm_search_path() -> str:
     return "/avm/vulnerabilities"
 
 
+def certificate_search_path() -> str:
+    return "/certificates/certificates"
+
+
+def service_search_path() -> str:
+    return "/services/services"
+
+
 def device_detail_path(hostname: str) -> str:
     return f"/devices/devices/{hostname}"
 
@@ -50,6 +58,14 @@ def user_inventory_detail_path(username: str) -> str:
 
 def application_inventory_detail_path(application_id: str) -> str:
     return f"/appinventory/applications/{application_id}"
+
+
+def certificate_inventory_detail_path(certificate_id: str) -> str:
+    return f"/certificates/certificates/{certificate_id}"
+
+
+def service_inventory_detail_path(service_id: str) -> str:
+    return f"/services/services/{service_id}"
 
 
 def queries_path() -> str:
